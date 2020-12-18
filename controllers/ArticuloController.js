@@ -5,7 +5,13 @@ module.exports = {
     // listar los articulos ( GET api/articulo/list )
     list: async(req, res, next) =>{
 
-        await db.Articulo.findAll()
+        await db.Articulo.findAll({
+            include: [{
+                model: db.Categoria,
+                as: 'categoria',
+                attributes: ['nombre', 'descripcion']
+            }]
+        })
         .then(articulos =>{
             res.status(200).json( articulos )
         })
@@ -44,8 +50,10 @@ module.exports = {
         
             if (articulo){
                 await db.Articulo.update({ 
+                    codigo: req.body.codigo,
                     nombre: req.body.nombre,
-                    descripcion: req.body.descripcion
+                    descripcion: req.body.descripcion,
+                    categoriaId: req.body.categoriaId
                 },{
                     where: { id: req.body.id }
                 })

@@ -4,10 +4,10 @@ const auth = require('../../middlewares/auth');
 
 const router = routerx();
 
-router.get('/list', usuarioController.list);
-router.post('/add', usuarioController.add);
 router.post('/login', usuarioController.login);
-router.put('/update', usuarioController.update);
-router.get('/query', usuarioController.query);
+router.get('/list', auth.verifyAdministrador, usuarioController.list);
+router.post('/add', auth.verifyAdministrador, usuarioController.add);
+router.put('/update', auth.verifyAdministrador, usuarioController.update);
+router.get('/query', auth.verifyAdministrador, usuarioController.query);
 
 module.exports = router;

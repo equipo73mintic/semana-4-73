@@ -30,7 +30,7 @@ exports.login = async(req, res, next) => {
                 let tokenReturn = await token.encode(user);
                 res.status(200).json({ 
                     auth: true,
-                    user, 
+                    // user, 
                     tokenReturn 
                 });
             } else {
@@ -58,9 +58,9 @@ exports.list = async (req, res, next) =>{
   
     await db.Usuario.findAll()
     .then(users =>{
-        res.status(200).send({
+        res.status(200).json(
             users
-        });
+        );
     })
     .catch(err =>{
         res.status(500).send({
@@ -77,11 +77,11 @@ exports.update = async (req, res, next) =>{
             where: { id: req.body.id }
         });
         if (exist){
-            req.body.password = bcrypt.hashSync(req.body.password, 10);
+            // req.body.password = bcrypt.hashSync(req.body.password, 10);
             await db.Usuario.update({ 
                 nombre: req.body.nombre,
                 email: req.body.email,
-                password: req.body.password,
+                // password: req.body.password,
                 rol: req.body.rol
             },{ 
                 where: { id: req.body.id } 
@@ -100,6 +100,52 @@ exports.update = async (req, res, next) =>{
     } catch (err){
         res.status(500).send({
             message: "Opps! "+ err
+        });
+        next(err);
+    }
+}
+
+exports.activate = async(req, res, next) =>{
+
+    await db.Usuario.update({ estado: 1 }, { where: { id: req.body.id } })
+    .then(updated => {
+        if (updated[0] > 0){
+            res.status(200).json({
+                updated: true,
+                estado: 'Activate'
+            });
+        } else {
+            res.status(404).send({
+                updated: false,
+                reason: 'User not Found'
+            });
+        }
+    })
+    .catch(err => {
+        res.status(500).send({
+            message: "Houston, we have an " + err
+        });
+        next(err);
+    });
+}
+
+exports.deactivate = async(req, res, next) =>{
+    try {
+        const updated = await db.Usuario.update({ estado: 0 }, { where: { id: req.body.id } });
+        if (updated[0] > 0){
+            res.status(200).json({
+                updated: true,
+                estado: 'Deactivate'
+            });
+        } else {
+            res.status(404).send({
+                updated: false,
+                reason: 'User not Found'
+            });
+        }
+    } catch (err) {
+        res.status(500).send({
+            message: "Houston, we have an " + err
         });
         next(err);
     }

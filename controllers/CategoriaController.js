@@ -5,18 +5,19 @@ module.exports = {
     // listar las categorias ( GET api/categoria/list )
     list: async(req, res, next) =>{
 
-        await db.Categoria.findAll()
-        .then(categorias =>{
-            res.status(200).send({
-                categorias
-            })
-        })
-        .catch(err =>{
+        try {
+            const categorias = await db.Categoria.findAll();
+            if (categorias){
+                res.status(200).json(
+                    categorias
+                );
+            }
+        } catch (error) {
             res.status(500).send(
-                "Error => "+ err
+                "Error => "+ error
             )
             next(err);
-        });
+        }
     },
 
     // agregar nueva categoria ( POST api/categoria/add )

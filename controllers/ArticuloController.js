@@ -9,7 +9,7 @@ module.exports = {
             include: [{
                 model: db.Categoria,
                 as: 'categoria',
-                attributes: ['nombre', 'descripcion']
+                attributes: ['id','nombre', 'descripcion']
             }]
         })
         .then(articulos =>{
